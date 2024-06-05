@@ -6,10 +6,9 @@ let tempArr = []; // 30분 간의 볼륨을 담을 임시 배열
 let index = 0;
 
 // test
-let test1 = [];
-let test2 = [];
 let testDailyArr = [];
-let testDates = []
+let testMonthlyArr = [];
+let testDates = [];
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -20,23 +19,20 @@ function setup() {
   for (let i = 20240601; i <= 20240630; i++) {
     testDates.push(i)
   }
-
+  // 내가 원하는 형태는
+  // dailyArr === [[0, v], [1, v], ... [47, v]]
+  // monthlyArr === [[날짜, dailyArr], [날짜, dailyArr] ...]
   for (let j = 0; j < testDates.length; j++) {
     for (let i = 0; i < 48; i ++) {
-      test1.push([i, random(100, 110)]);
+      testDailyArr.push([i, random(80, 100)]);
     }
-    test2.push([j, test1]);
-    testDailyArr.push(test2);
-    test1 = []
-    test2 = []
+    testMonthlyArr.push([testDates[j], testDailyArr])
+    testDailyArr = []
   }
 }
 
 function draw() {
   background(220);
-
-  // test
-  // drawPotato(testArr, 20240528, width / 2, height / 2);
 
   let d = new Date();
 
@@ -59,13 +55,27 @@ function draw() {
 
   if (hour() == 19) {
     //감자 보고는 19시쯤으로 (퇴근시간)
-    wait(60);
-    arrFillSort(dailyArr);
-    storedailyArr(dailyArr);
-    console.log(dailyArr);
-    console.log(monthlyArr);
-    dailyArr = [];
+    // wait(60);
+    // arrFillSort(dailyArr);
+    // storedailyArr(dailyArr);
+    // console.log(dailyArr);
+    // console.log(monthlyArr);
+    // dailyArr = [];
   }
+
+  drawCalendar(2024, 6, width / 2, height / 2);
+
+  // console.log(testMonthlyArr);
+
+  // // test
+  // let c = 1;
+  // let cd = 20240601;
+  // for (let i = 0; i < 6; i++) {
+  //   for (let j = 0; j < 5; j++) {
+  //     drawPotato(testMonthlyArr, cd, width * (i + 0.5) / 6, height * (j + 0.5) / 5, 1);
+  //     cd++;
+  //   }
+  // }
 }
 
 function wait(sec) {
@@ -73,6 +83,7 @@ function wait(sec) {
     now = start;
   while (now - start < sec * 1000) {
     now = Date.now();
+    console.log("waiting...");
   }
   // 출처: https://inpa.tistory.com/entry/JS-📚-자바스크립트에-sleep-wait-대기-함수-쓰기 [Inpa Dev 👨‍💻:티스토리]
 }
@@ -95,7 +106,7 @@ function keyPressed() {
       (D < 10 ? "0" : "") +
       D.toString(); // 수정된 코드 (GPT4)
 
-    drawPotato(dailyArr, date, width / 2, height / 2);
+    drawPotato(dailyArr, date, width / 2, height / 2, 1);
   } else if (key === "2") {
     console.log("2");
   }
@@ -130,7 +141,7 @@ function storedailyArr(arr) {
   monthlyArr.push([date, arr]);
 }
 
-function drawPotato(arr, date, x, y) {
+function drawPotato(arr, date, x, y, s) {
   // arr=monthlyarr, int, int, int
   let drawArr = [];
   for (let i = 0; i < arr.length; i++) {
@@ -142,6 +153,7 @@ function drawPotato(arr, date, x, y) {
   }
   push();
   translate(x, y);
+  scale(s);
   strokeWeight(5);
   beginShape();
   curveVertex(
@@ -167,3 +179,83 @@ function drawPotato(arr, date, x, y) {
   endShape();
   pop();
 }
+
+function drawCalendar(year, month, x, y) { // GPT4의 도움을 받았습니다 // 감자도 그려짐
+  push();
+  // 달력 그리기 설정
+  const size = 1.7;
+  month--; // js에서는 '월'이 0부터 시작함(whyㅜㅜ)
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const firstDay = new Date(year, month, 1).getDay();
+  const cellSize = 50 * size;
+  const padding = 10 * size;
+  
+  translate(
+    x - (padding * 2 + cellSize * 7) / 2,
+    y - (padding * 4 + cellSize * 7) / 2
+  );
+
+  // 가로선
+  let firstY = cellSize * 2 - padding / 2 - 6.5 * size;
+  line(padding, firstY, cellSize * 7 + padding, firstY);
+  for (let y = cellSize * 2 + padding / 2; y < cellSize * 8; y += cellSize) {
+    line(padding, y, cellSize * 7 + padding, y);
+  }
+  // 세로선
+  for (let x = padding; x < cellSize * 8; x += cellSize) {
+    line(x, cellSize * 2 + padding / 2, x, cellSize * 7 + padding / 2);
+  }
+
+  // 월 이름 표시
+  textAlign(LEFT);
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+  textSize(20 * size);
+  text(monthNames[month] + " " + year, padding, cellSize);
+
+  // 요일 이름 표시
+  textAlign(CENTER);
+  textSize(9 * size);
+  const dayNames = ["S", "M", "T", "W", "T", "F", "S"];
+  for (let i = 0; i < 7; i++) {
+    text(dayNames[i], padding * 3.5 + i * cellSize, 2 * cellSize);
+  }
+
+  // 날짜 표시
+  textAlign(LEFT);
+  textSize(9 * size);
+  let day = 1;
+  for (let row = 0; row < 6; row++) {
+    for (let col = 0; col < 7; col++) {
+      const x = padding * 1.2 + col * cellSize;
+      const y = 3 * cellSize + row * cellSize - cellSize * 0.7;
+      if (row === 0 && col < firstDay) {
+        // 이전 달의 날짜는 표시하지 않음
+      } else if (day > daysInMonth) {
+        // 다음 달의 날짜는 표시하지 않음
+        break;
+      } else {
+        // 현재 달의 날짜 표시
+        let pd = 20240600 + day;
+        text(day, x + 2, y);
+        drawPotato(testMonthlyArr, pd, padding + (col + 0.5) * cellSize, (row + 2.5) * cellSize + padding / 2, 0.3);
+        day++;
+      }
+    }
+  }
+  pop();
+}
+
+// drawPotato(testMonthlyArr, cd, width * (i + 0.5) / 6, height * (j + 0.5) / 5, 1);
