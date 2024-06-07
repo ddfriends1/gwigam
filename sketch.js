@@ -202,7 +202,7 @@ function drawCalendar(year, month, x, y) {
     y - (padding * 4 + cellSize * 7) / 2
   );
 
-  if (firstDay == 6) {
+  if (firstDay == 6 || month != 2) {
     // 한 줄 더 있는 경우
     // 가로선
     let firstY = cellSize * 2 - padding / 2 - 6.5 * size;
