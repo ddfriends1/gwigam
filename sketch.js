@@ -4,6 +4,7 @@ let dailyArr = []; // 30분 간의 평균 볼륨을 받음
 let monthlyArr = []; // 한 달 간 매일의 감자 데이터를 날짜와 함께 저장
 let tempArr = []; // 30분 간의 볼륨을 담을 임시 배열
 let index = 0;
+let ifOneMoreLine = 0;
 
 // test
 let testDailyArr = [];
@@ -63,7 +64,12 @@ function draw() {
     // dailyArr = [];
   }
 
+  push();
+  if (ifOneMoreLine == 1) {
+    translate(0, -(50 + 10) * 1.7 / 2);
+  }
   drawCalendar(2024, 6, width / 2, height / 2);
+  pop();
 
   // console.log(testMonthlyArr);
 
@@ -195,15 +201,30 @@ function drawCalendar(year, month, x, y) { // GPT4의 도움을 받았습니다 
     y - (padding * 4 + cellSize * 7) / 2
   );
 
-  // 가로선
-  let firstY = cellSize * 2 - padding / 2 - 6.5 * size;
-  line(padding, firstY, cellSize * 7 + padding, firstY);
-  for (let y = cellSize * 2 + padding / 2; y < cellSize * 8; y += cellSize) {
-    line(padding, y, cellSize * 7 + padding, y);
-  }
-  // 세로선
-  for (let x = padding; x < cellSize * 8; x += cellSize) {
-    line(x, cellSize * 2 + padding / 2, x, cellSize * 7 + padding / 2);
+  if (firstDay == 6) {  // 한 줄 더 있는 경우
+    // 가로선
+    let firstY = cellSize * 2 - padding / 2 - 6.5 * size;
+    line(padding, firstY, cellSize * 7 + padding, firstY);
+    for (let y = cellSize * 2 + padding / 2; y < cellSize * 9; y += cellSize) {
+      line(padding, y, cellSize * 7 + padding, y);
+    }
+    // 세로선
+    for (let x = padding; x < cellSize * 8; x += cellSize) {
+      line(x, cellSize * 2 + padding / 2, x, cellSize * 8 + padding / 2);
+    }
+    ifOneMoreLine = 1;
+
+  } else { // 보통의 경우
+    // 가로선
+    let firstY = cellSize * 2 - padding / 2 - 6.5 * size;
+    line(padding, firstY, cellSize * 7 + padding, firstY);
+    for (let y = cellSize * 2 + padding / 2; y < cellSize * 8; y += cellSize) {
+      line(padding, y, cellSize * 7 + padding, y);
+    }
+    // 세로선
+    for (let x = padding; x < cellSize * 8; x += cellSize) {
+      line(x, cellSize * 2 + padding / 2, x, cellSize * 7 + padding / 2);
+    }
   }
 
   // 월 이름 표시
@@ -258,4 +279,6 @@ function drawCalendar(year, month, x, y) { // GPT4의 도움을 받았습니다 
   pop();
 }
 
-// drawPotato(testMonthlyArr, cd, width * (i + 0.5) / 6, height * (j + 0.5) / 5, 1);
+function evaluatePotato() {
+
+}
