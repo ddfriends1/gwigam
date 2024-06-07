@@ -18,17 +18,17 @@ function setup() {
 
   // test
   for (let i = 20240601; i <= 20240630; i++) {
-    testDates.push(i)
+    testDates.push(i);
   }
   // 내가 원하는 형태는
   // dailyArr === [[0, v], [1, v], ... [47, v]]
   // monthlyArr === [[날짜, dailyArr], [날짜, dailyArr] ...]
   for (let j = 0; j < testDates.length; j++) {
-    for (let i = 0; i < 48; i ++) {
+    for (let i = 0; i < 48; i++) {
       testDailyArr.push([i, random(80, 100)]);
     }
-    testMonthlyArr.push([testDates[j], testDailyArr])
-    testDailyArr = []
+    testMonthlyArr.push([testDates[j], testDailyArr]);
+    testDailyArr = [];
   }
 }
 
@@ -66,7 +66,7 @@ function draw() {
 
   push();
   if (ifOneMoreLine == 1) {
-    translate(0, -(50 + 10) * 1.7 / 2);
+    translate(0, (-(50 + 10) * 1.7) / 2);
   }
   drawCalendar(2024, 6, width / 2, height / 2);
   pop();
@@ -186,7 +186,8 @@ function drawPotato(arr, date, x, y, s) {
   pop();
 }
 
-function drawCalendar(year, month, x, y) { // GPT4의 도움을 받았습니다 // 감자도 그려짐
+function drawCalendar(year, month, x, y) {
+  // GPT4의 도움을 받았습니다 // 감자도 그려짐
   push();
   // 달력 그리기 설정
   const size = 1.7;
@@ -195,13 +196,14 @@ function drawCalendar(year, month, x, y) { // GPT4의 도움을 받았습니다 
   const firstDay = new Date(year, month, 1).getDay();
   const cellSize = 50 * size;
   const padding = 10 * size;
-  
+
   translate(
     x - (padding * 2 + cellSize * 7) / 2,
     y - (padding * 4 + cellSize * 7) / 2
   );
 
-  if (firstDay == 6) {  // 한 줄 더 있는 경우
+  if (firstDay == 6) {
+    // 한 줄 더 있는 경우
     // 가로선
     let firstY = cellSize * 2 - padding / 2 - 6.5 * size;
     line(padding, firstY, cellSize * 7 + padding, firstY);
@@ -213,8 +215,8 @@ function drawCalendar(year, month, x, y) { // GPT4의 도움을 받았습니다 
       line(x, cellSize * 2 + padding / 2, x, cellSize * 8 + padding / 2);
     }
     ifOneMoreLine = 1;
-
-  } else { // 보통의 경우
+  } else {
+    // 보통의 경우
     // 가로선
     let firstY = cellSize * 2 - padding / 2 - 6.5 * size;
     line(padding, firstY, cellSize * 7 + padding, firstY);
@@ -271,7 +273,13 @@ function drawCalendar(year, month, x, y) { // GPT4의 도움을 받았습니다 
         // 현재 달의 날짜 표시
         let pd = 20240600 + day;
         text(day, x + 2, y);
-        drawPotato(testMonthlyArr, pd, padding + (col + 0.5) * cellSize, (row + 2.5) * cellSize + padding / 2, 0.3);
+        drawPotato(
+          testMonthlyArr,
+          pd,
+          padding + (col + 0.5) * cellSize,
+          (row + 2.5) * cellSize + padding / 2,
+          0.3
+        );
         day++;
       }
     }
@@ -279,6 +287,4 @@ function drawCalendar(year, month, x, y) { // GPT4의 도움을 받았습니다 
   pop();
 }
 
-function evaluatePotato() {
-
-}
+function evaluatePotato() {}
