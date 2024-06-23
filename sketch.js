@@ -5,16 +5,36 @@ let monthlyArr = []; // 한 달 간 매일의 감자 데이터를 날짜와 함�
 let tempArr = []; // 30분 간의 볼륨을 담을 임시 배열
 let index = 0;
 let ifOneMoreLine = 0;
+let ifCustomPotato = 0;
+let customDate = 0;
+let isCustomDateInput = 0;
+
+let customPotato = []; // 소리 큼
+let customMonthlyArr = []
 
 // test
 let testDailyArr = [];
 let testMonthlyArr = [];
 let testDates = [];
 
+function preload() {
+  bgImg = loadImage('assets/soil.jpg');
+}
+
 function setup() {
   createCanvas(windowWidth, windowHeight);
   mic = new p5.AudioIn();
   mic.start();
+
+  // customPotato = [71, 71, 60, 60, 62, 62, 50, 65, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 68, 64, 64, 66, 68, 64, 50, 54, 54, 53, 53, 50, 69, 75, 50, 49, 49, 49, 49, 48, 48, 60, 48]; // 소리 보통
+  customPotato = [65, 65, 68, 74, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 67, 65, 60, 65, 73, 72, 63, 102, 100, 100, 104, 89, 48, 48, 65, 65, 67, 60, 47, 47, 43, 43, 53, 53, 58, 58, 59, 59]; // 소리 큼
+  let customIndexArr = [];
+  for (let i = 0; i < customPotato.length; i++) {
+    customIndexArr.push([i, customPotato[i]]);
+  }
+  customMonthlyArr.push(20240618);
+  customMonthlyArr.push(customIndexArr);
+  customMonthlyArr = [customMonthlyArr];
 
   // test
   for (let i = 20240601; i <= 20240630; i++) {
@@ -25,7 +45,7 @@ function setup() {
   // monthlyArr === [[날짜, dailyArr], [날짜, dailyArr] ...]
   for (let j = 0; j < testDates.length; j++) {
     for (let i = 0; i < 48; i++) {
-      testDailyArr.push([i, random(80, 100)]);
+      testDailyArr.push([i, random(80, 110)]);
     }
     testMonthlyArr.push([testDates[j], testDailyArr]);
     testDailyArr = [];
@@ -33,7 +53,11 @@ function setup() {
 }
 
 function draw() {
-  background(220);
+  // background(220);
+  background(bgImg);
+
+  stroke(255);
+  strokeWeight(2);
 
   let d = new Date();
 
@@ -54,34 +78,45 @@ function draw() {
     }
   }
 
-  if (hour() == 19) {
-    //감자 보고는 19시쯤으로 (퇴근시간)
-    // wait(60);
-    // arrFillSort(dailyArr);
-    // storedailyArr(dailyArr);
-    // console.log(dailyArr);
-    // console.log(monthlyArr);
-    // dailyArr = [];
+  if (ifCustomPotato == 1) {
+    customDate = 20240618;
+    drawPotato(customMonthlyArr, customDate, width/2, height/2, 3);
+    let customScore = floor(evaluatePotato(customMonthlyArr, customDate));
+    push();
+    textSize(20);
+    textAlign(CENTER, CENTER);
+    text('Price of the Potato:\n' + str(customScore), width / 2, height / 2);
+    pop();
+  } else {
+    if (hour() == 19) {
+      //감자 보고는 19시쯤으로 (퇴근시간)
+      wait(60);
+      arrFillSort(dailyArr);
+      storedailyArr(dailyArr);
+      console.log(dailyArr);
+      console.log(monthlyArr);
+      dailyArr = [];
+    }
+
+    push();
+    if (ifOneMoreLine == 1) {
+      translate(0, (-(50 + 10) * 1.7) / 2);
+    }
+    drawCalendar(2024, 6, width / 2, height / 2);
+    pop();
+
+    // console.log(testMonthlyArr);
+
+    // // test
+    // let c = 1;
+    // let cd = 20240601;
+    // for (let i = 0; i < 6; i++) {
+    //   for (let j = 0; j < 5; j++) {
+    //     drawPotato(testMonthlyArr, cd, width * (i + 0.5) / 6, height * (j + 0.5) / 5, 1);
+    //     cd++;
+    //   }
+    // }
   }
-
-  push();
-  if (ifOneMoreLine == 1) {
-    translate(0, (-(50 + 10) * 1.7) / 2);
-  }
-  drawCalendar(2024, 6, width / 2, height / 2);
-  pop();
-
-  // console.log(testMonthlyArr);
-
-  // // test
-  // let c = 1;
-  // let cd = 20240601;
-  // for (let i = 0; i < 6; i++) {
-  //   for (let j = 0; j < 5; j++) {
-  //     drawPotato(testMonthlyArr, cd, width * (i + 0.5) / 6, height * (j + 0.5) / 5, 1);
-  //     cd++;
-  //   }
-  // }
 }
 
 function wait(sec) {
@@ -99,22 +134,12 @@ function windowResized() {
 }
 
 function keyPressed() {
-  if (key === "1") {
-    console.log("1");
-    let d = new Date();
-    let y = d.getFullYear();
-    let m = d.getMonth();
-    let D = d.getDate();
-    let date =
-      y.toString() +
-      (m < 9 ? "0" : "") +
-      (m + 1).toString() +
-      (D < 10 ? "0" : "") +
-      D.toString(); // 수정된 코드 (GPT4)
-
-    drawPotato(dailyArr, date, width / 2, height / 2, 1);
-  } else if (key === "2") {
-    console.log("2");
+  if (key === "c") {
+    if (ifCustomPotato == 0) {
+      ifCustomPotato = 1;
+    } else {
+      ifCustomPotato = 0;
+    }
   }
 }
 
@@ -148,7 +173,7 @@ function storedailyArr(arr) {
 }
 
 function drawPotato(arr, date, x, y, s) {
-  // arr=monthlyarr, int, int, int
+  // (arr=monthlyarr, int, int, int)
   let drawArr = [];
   for (let i = 0; i < arr.length; i++) {
     if (arr[i][0] == date) {
@@ -157,7 +182,10 @@ function drawPotato(arr, date, x, y, s) {
       continue;
     }
   }
+  //evaluatePotato(arr, date, x, y);
   push();
+  fill('#ECCC9B');
+  stroke('#B79268');
   translate(x, y);
   scale(s);
   strokeWeight(5);
@@ -280,6 +308,13 @@ function drawCalendar(year, month, x, y) {
           (row + 2.5) * cellSize + padding / 2,
           0.3
         );
+        let individualScore = floor(evaluatePotato(testMonthlyArr, pd));
+        push();
+        textSize(10);
+        textAlign(CENTER, CENTER);
+        text(individualScore, padding + (col + 0.5) * cellSize, (row + 2.5) * cellSize + padding / 2);
+        pop();
+    
         day++;
       }
     }
@@ -287,4 +322,25 @@ function drawCalendar(year, month, x, y) {
   pop();
 }
 
-function evaluatePotato() {}
+function evaluatePotato(arr, date, x, y) {
+  let evArr = [];
+  let tempEvArr = [];
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i][0] == date) {
+      tempEvArr = arr[i][1];
+    } else {
+      continue;
+    }
+  }
+  for (let i = 0; i < tempEvArr.length; i++) {
+    evArr.push(tempEvArr[i][1]);
+  }
+  // console.log(evArr);
+
+  let score = max(evArr) - min(evArr);
+  score = map(score, 0, 110, 0, 1);
+  score = 100 / score;
+  // console.log(score);
+
+  return score;
+}
